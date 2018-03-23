@@ -130,5 +130,55 @@ ex) 마우스 이벤트, 키보드 이벤트, 시스템 이벤트등
 3.2 flatMap() 함수
 
 - map() 함수가 일대일 함수라면 flatMap() 함수는 일대다 혹은 일대일 Observable 함수 입니다.
+- 즉, map()은 input 값이 1개일 경우 1개를 반환하지만, flatMap() 함수는 input 값이 1개일경우 여러개의 반환값을 만들 수 있음.
 
+3.3 filter() 함수
 
+- filter() 함수는 Observable 에서 원하는 데이터만 걸러내는 역활을 함.
+- filter() 함수에는 boolean 값을 리턴하는 함수형 인터페이스인 Predicate를 인자로 넣습니다.(map() 과 flatMap() 하ㅣㅁ수에서 Function 객체를 넣은 것과 다릅니다.)
+- filter 함수와 비슷한 함수들
+   - first(default) 함수 : Observable의 첫 번째 값을 필터함. 만약 값없이 완료되면 대신 기본값을 리턴함.
+   - last(default) 함수 : Observable의 마지막 값을 필터함. 만약 값없이 완료되면 대신 기본값을 리턴함.
+   - take(N) 함수 : 최초 N개 값만 가져옴.
+   - takeLast(N) 함수 : 마지막 N개 값만 필터함.
+   - skip(N) 함수 : 최초 N개 값을 건너뜀.
+   - skipLast(N) 함수 : 마지막 N 개 값을 건너뜀.
+   
+3.4 reduce() 함수
+
+- reduce() 함수는 발생한 데이터를 모두 사용하여 어떤 최종 결과 데이터를 합성할 때 활용합니다.
+- reduce 는 Maybe 나 Single 을 리턴함.
+- reduce() 함수를 호출하면 인자로 넘긴 람다 표현식에 의해 결과 없이 완료될수도 있어서 Maybe 사용
+
+3.4.1 데이터 쿼리 하기
+
+- 
+
+## 4. 리액티브 연산자의 활용
+
+- 생성 연산자 : Observable 로 데이터 흐름을 만듬
+- 변환 연산자와 필터 연산자 : 데이터 흐름을 내가 원하는 방식으로 변형
+- 결합 연산자 : 1개의 Observable이 아니라 여러 개의 Observable 을 조합할 수 있도록 해줌.
+
+리액티브 연산자(함수) 분류
+
+|연산자 종류|소개 장|연산자 함수|
+|---|---|---| 
+|생성 연산자|2,4 장|just(), fromXXX(), create(), interval(), range(), timer(), intervalRange(), defer(), repeat()|
+|변환 연산자|3,4,7 장|map(), flatMap(), concatMap(), switchMap(), groupBy(), scan(), buffer(), window()|
+|필터 연산자|3 장|flter(), take(), skip(), distinct()|
+|결합 연산자|4 장|zip(), combineLastest(), merge(), concat()|
+|조건 연산자|4 장|amb(), takeUntil(), skipUntil(), all()|
+|에러 처리 연산자|7 장|onErrorReturn(), onErrorResumeNext(), retry(), retryUntil()|
+|기타 연산자|2,3,5 장|subscribe(), subscribeOn(), observeOn(), reduce(), count()|
+
+4.1 생성 연산자
+
+- 생성 연ㅅ나자의 역할은 데이터 흐름을 만드는 것.
+- 간단하게 Observalbe(Observable, Single, Maybe 객체등) 을 만든다고 생각하면 됩니다.
+
+4.1.1 interval() 함수
+
+- 일정 시간 간격으로 데이터 흐름을 생성
+- 계산 스케줄러에서 실행됨. (현재 스레드가 아니라 계산을 위한 별도의 스레드에서 동작)
+- interval() 함수는 기본적으로 영원히 지속 실행되기 때문에 폴링 용도로 많이 사용.
