@@ -1,6 +1,7 @@
 package com.sopark.chapter4;
 
 
+import com.sopark.common.Log;
 import io.reactivex.Observable;
 
 import java.util.concurrent.TimeUnit;
@@ -12,9 +13,7 @@ public class IntervalExample {
                 .map(data -> (data + 1) *100)
                 .take(5);
 
-        source.subscribe((data) -> {
-            System.out.println(data);
-        });
+        source.subscribe(Log::it);
 
         Thread.sleep(1000);
     }
@@ -24,3 +23,4 @@ public class IntervalExample {
         intervalExample.printNumbers();
     }
 }
+
