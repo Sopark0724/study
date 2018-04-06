@@ -55,6 +55,7 @@ Exception in thread "main" io.reactivex.exceptions.OnErrorNotImplementedExceptio
 	at io.reactivex.internal.functions.Functions$OnErrorMissingConsumer.accept(Functions.java:701)
 	at io.reactivex.internal.observers.ConsumerSingleObserver.onError(ConsumerSingleObserver.java:45)
 	at io.reactivex.internal.operators.observable.ObservableSingleSingle$SingleElementObserver.onNext(ObservableSingleSingle.java:82)
+	
 ~~~
 
 
@@ -94,7 +95,6 @@ ex) 마우스 이벤트, 키보드 이벤트, 시스템 이벤트등
 2.5.2 BehaviorSubject 클래스
 
 - 구독자가 구독을 하면 가장 최근 값 혹은 기본값을 넘겨주는 클래스
-
 
 2.5.3 PublishSubject 클래스
 
@@ -224,10 +224,39 @@ ex) 마우스 이벤트, 키보드 이벤트, 시스템 이벤트등
 
 4.2.2 switchMap() 함수
 
-- concatMap() 함수가 인터리빙이 발생할 수 있는 상황에서 동작의 순서를 보장해준다면 switchMap() 함수는 순서를 보장하기 위해 기존에 진행 중이던 작업을 바로 중단합니다.
+- concatMap() 함수가 인터리빙이 발생할 수 있는 상황에서 동작의 순서를 보장해준다면 switchMap() **함수는 순서를 보장하기 위해 기존에 진행 중이던 작업을 바로 중단합니다.
 - 그리고 여러 개의 값이 발행되었을때 마지막에 들어온 값만 처리하고 싶을 때 사용합니다.
 - 중간에 끊기더라도 마지막 데이터의 처리는 보장하기 때문
 - 시간이 겹쳐지지 않음
+
+4.2.3 groupBy() 함수
+
+- 단일 Observable을 여러개로 이루어진 Observable 그룹으로 만듬
+
+~~~
+함수 비교
+
+- map() : 1개의 데이터를 다른 값이나 다른 타입으로 변환
+- flatMap() : 1개의 값을 받아서 여러 개의 데이터(Observable)로 확장해줌
+- groupBy() 함수는 값들을 받아서 어떤 기준에 맞는 새로운 Observable 다수를 생성
+~~~ 
+
+4.2.4 scan() 함수
+
+- scan() 함수는 reduce() 와 비슷
+- reduce() 함수는 Observable에서 모든 데이터가 입력된 후 그것을 종합하여 마지막 1개의 데이터만을 구독자에게 발행하는 반면 scan() 함수는 실행할 때마다 입력값에 맞는 중간 결과 및 최종 결과를 구독자에게 발행
+- reduce() 의 경우 MayBe 타입을 리턴하지만 Observable 타입을 리턴
+- reduce() 의 경우 마지막 값이 입력되지 않거나 onComplete 이벤트가 발생하지 않으면 구독자에게 값을 발행하지 않습니다. 최악의 경우에는 값을 전혀 발행하지 않고 종료할 수 도 있으므로 Maybe 클래스 타입으로 정의합니다. 반면 scan() 함수는 값이 입력될 때마다 구독자에게 값을 발행합니다. 따라서 Maybe가 아니라 Observable 입니다.
+
+4.3 결합 연산자
+
+- flatMap() 함수나 groupBy() 함수등은 1개의 Observable 을 확장해주는 반면 결합 연산자들은 **여러개의 Observable 을 내가 원하는 Observable 로 결합** 
+
+4.3.1 zip() 함수
+
+- 각각의 Observ able을 모두 활용해 2개 혹은 그 이상의 Observable을 결합
+- A, B 두개의 Observable을 결합한다면 2개의 **Observable에서 모두 데이터를 발행해야 결합**할 수 있음. 그전까지는 발행을 기다림.
+- Observalble 의 갯수가 다르다면 적은쪽의 Observable갯수를 기준으로 처리함.
 
  
 

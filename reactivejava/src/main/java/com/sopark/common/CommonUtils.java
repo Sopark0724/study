@@ -63,4 +63,13 @@ public class CommonUtils {
 	public static int toInt(String val) { 
 		return Integer.parseInt(val);
 	}
+
+	public static String getSharpe(String obj){
+		if(obj == null || obj.equals("")) return "NO-SHAPE";
+		if(obj.endsWith("-H")) return "HEXAGON";
+		if(obj.endsWith("-O")) return "OCTAGON";
+		if(obj.endsWith("-R")) return "RECTANGLE";
+		if(obj.endsWith("-T")) return "TRAIANGLE";
+		return "BALL";
+	}
 }
