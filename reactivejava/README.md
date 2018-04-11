@@ -254,11 +254,76 @@ ex) 마우스 이벤트, 키보드 이벤트, 시스템 이벤트등
 
 4.3.1 zip() 함수
 
-- 각각의 Observ able을 모두 활용해 2개 혹은 그 이상의 Observable을 결합
+- 각각의 Observable을 모두 활용해 2개 혹은 그 이상의 Observable을 결합
 - A, B 두개의 Observable을 결합한다면 2개의 **Observable에서 모두 데이터를 발행해야 결합**할 수 있음. 그전까지는 발행을 기다림.
 - Observalble 의 갯수가 다르다면 적은쪽의 Observable갯수를 기준으로 처리함.
+- 마지막 파라미터에 어떻게 묶을지에 대한 함수 정의 (BiFunction 정의)
+- zipWith 함수는 zip 으로 만들어진 Observable 에 대해서 추가적으로 Observable 을 추가하여 zip 함수를 호출할 때 사용.
 
- 
+> RxJava를 사용하기 좋은 경우는 '비동기 프로그램'입니다. 특히 서버와 통신하는 비동기 로직을 만들 때 좋은 효과를 볼 수 있습니다.
+
+4.3.2 combineLastes() 함수
+
+- 2개 이상의 Observable을 기반으로 Observable 각각의 값이 변경되었을 때 갱신해주는 함수.
+- 2개 이상의 Observable이 있을때 두 Observable 모두 값을 발행하면 그때 결과값이 호출됨. **그다음부터는 둘중 어떤 것이 갱신되면 최신 결과값을 보여줌.**
+
+4.3.3 merge() 함수
+
+- 가장 단순한 결합 함수
+- 입력 Observable의 순서와 모든 Observable이 데이터를 발행하는지 등에 관여하지 않고 어느 것이든 업스트림에서 **먼저 입력되는 데이터를 그대로 발행**
+- zip() 은 모든 Observable 이 발행되어야지 실행되지만 merge 의 경우는 Observable 이 발행되는 순간 마다 실행됨.
+
+4.3.4 concat() 함수
+
+- concat() 은 2개 이상의 Observable 을 이어 붙여주는 함수
+- 첫번째 Observable 에 OnComplete 이벤트가 발생해야 두번째 Observable을 구독
+- 첫번째 Observable 에  onComplete 이벤트가 발생하지 않게 되면 두번째 Observable은 영원히 대기. 이는 잠재적인 메모리 누수의 위험을 내포함.
+- concat() 함수를 활용할 때는 onComplete 이벤트의 발생 여부 확인이 중요. (doOnComplete 메소드를 통해 확인)
+
+4.4 조건 연산자
+
+- 조건 연산자는 Observable의 흐름을 제어하는 역할 
+- 필터 연산자가 발행된 값을 채택하느냐 기각하느냐 여부에 초점을 맞춘다면, 조건 연산자는 지금까지의 흐름을 어떻게 제어할 것인지에 초점을 맞춤
+
+~~~
+
+- amb() 함수 : 둘중 어느것이든 먼저 나온 Observable을 채택
+- takeUntil(other) 함수 : other Observable 에서 데이터가 발행되기 전까지만 현재 Observable을 채택
+- skipUntil(other) 함수 : takeUntil(other) 함수와는 반대로 other Observable 에서 데이터가 발행될 동안 현재 Observable에서 발행하는 값을 무시
+- all() 함수 : Observable에 입력된 값이 모두 특정 조건에 맞을 때만 true 를 발행. 만약 조건이 맞지 않으면 바로 false 발행  
+
+~~~ 
+
+4.4.1 amb() 함수
+
+- amb 는 ambiguous (모호한) 라는 영어 단어의 줄임말.
+- **여러 개의 Observable 중에서 1개의 Observable을 선택하는데, 선택 기준은 가장 먼저 데이터를 발행하는 Observable** 입니다. 이후에 나머지 Observable에서 발행하는 데이터는 모두 무시
+- List Observable 을 파라미터로 받음
+
+4.4.2 takeUntil() 함수
+
+- takeUntil() 함수는 take() 함수에 조건을 설정
+- take() 함수처럼 일정 개수만 값을 발행하되 완료 기준을 다른 Observable 에서 값을 발행하는지로 판단.
+
+4.4.3 skipUntil() 함수
+
+- skipUntil() 함수는 takeUntil() 과 정반대의 함수 
+- other Observable을 인자로 받는다는 점은 같지만 Observable 에서 데이터를 발행할 떄까지 값을 건너 뜁니다.
+
+4.4.4 all() 함수
+
+- 주어진 조건에 100% 맞을 때만 true 값을 발행하고 조건에 맞지 않는 데이터가 발행되면 바로 false 값을 발행
+
+4.5 수학 및 기타 연산자
+
+4.5.1 수학 함수
+
+4.5.2 delay() 함수
+
+- delay() 함수는 시간을 인자로 받아 Observable 의 데이터 발행을 지연시켜주는 역할
+- interval() 함수와 마찬가지로 계산 스케줄러에서 실행 (별도의 쓰레드에서 실행)
+
+
 
 
 
