@@ -20,8 +20,7 @@ public class OpenWeatherMapV1 {
 		Observable<String> source = Observable.just(URL + API_KEY)
 				.map(OkHttpHelper::getWithLog)
 				.subscribeOn(Schedulers.io());
-		
-		//어떻게 호출을 한번만 하게 할 수 있을까? 
+
 		Observable<String> temperature = source.map(this::parseTemperature);
 		Observable<String> city = source.map(this::parseCityName);
 		Observable<String> country = source.map(this::parseCountry);
