@@ -72,7 +72,7 @@
 
 애자일 방법론의 실천 방법으로 **TDD**, 짝프로그래밍, 일일빌드, 지속적인 통합등 다양한 실천 방법들이 있다.
 
-![TDD process](https://cheesecakelabs.com/blog/tdd-mobile-dev-matter-timing/)
+![TDD process](https://s3.amazonaws.com/ckl-website-static/wp-content/uploads/2017/03/TDD-e1492712699769-300x300.png)
 
 
  
