@@ -2,9 +2,14 @@ package chapter2;
 
 import org.junit.Test;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 public class Iteration {
 
@@ -55,5 +60,27 @@ public class Iteration {
         // Iterable 인터페이스에 java8 부터 생성됨
         // 메소드 레퍼런스 (forEach 에서의 값과 println 의 파라미터가 같을 경우 사용가능)
         friends.forEach(System.out::println);
+    }
+
+    @Test
+    public void test1(){
+        List<Integer> arrays = Arrays.asList(1,2,3,4);
+
+        arrays.stream()
+              .collect(toList());
+
+        arrays.stream()
+                .collect(toSet());
+
+    }
+
+    @Test
+    public void HighOrderFunction(){
+        Arrays.asList(1,2,3);
+        final Function<Function<Integer, String>, String> f = g -> g.apply(10);
+        System.out.println(f.apply(i -> "#" + i));
+
+        final Function<Integer, Function<Integer, Integer>> f2 = (i) -> ((i2) -> i + i2);
+        System.out.println(f2.apply(1).apply(9));
     }
 }
