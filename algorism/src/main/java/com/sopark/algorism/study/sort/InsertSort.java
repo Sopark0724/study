@@ -1,13 +1,18 @@
 package com.sopark.algorism.study.sort;
 
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * 이미 정렬된 숫자의 경우에는 속도가 선택 정렬보다는 빠르다.
  * 모두 정렬이 되어 있지 않다면, 최악의 경우 선택 정렬과 비슷.
  *
  * 시간복잡도 : O(N^2)
  */
-public class InsertSort {
+public class InsertSort implements Sort{
+
+    @Override
     public int[] sort(int[] input){
 
 
@@ -30,11 +35,10 @@ public class InsertSort {
 
             // 임시저장 값을 끼워 넣을 위치로 넣음.
             input[j] = temp;
-/*
-            Arrays.stream(input)
-                    .forEach(System.out::print);
 
-            System.out.println();*/
+            System.out.println(Arrays.stream(input)
+                    .mapToObj(String::valueOf)
+                    .collect(Collectors.joining(", ")));
 
         }
 
