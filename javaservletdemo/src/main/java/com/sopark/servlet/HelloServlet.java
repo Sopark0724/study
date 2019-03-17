@@ -17,6 +17,8 @@ public class HelloServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("doGet");
         resp.getWriter().write("Hello Servlet");
+        resp.getWriter().write("</br>");
+        resp.getWriter().write(getServletContext().getAttribute("name")+"");
     }
 
     @Override
