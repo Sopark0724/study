@@ -4,20 +4,6 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
-  <context-param>
-    <param-name>contextClass</param-name>
-    <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-  </context-param>
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>com.sopark.servlet.AppConfig</param-value>
-  </context-param>
-  <!-- Root WebApplicationContext Start -->
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  <!-- Root WebApplicationContext End -->
-
   <!--Servlet WebApplicationContext Start-->
   <servlet>
     <servlet-name>app</servlet-name>
