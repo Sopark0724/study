@@ -20,8 +20,8 @@ public class SampleControllerTest {
 
     @Test
     public void hello() throws Exception {
-        this.mockMvc.perform(get("/hello"))
+        this.mockMvc.perform(get("/hello/sopark"))
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.content().string("hello"));
+                .andExpect(MockMvcResultMatchers.content().string("hello sopark"));
     }
 }
