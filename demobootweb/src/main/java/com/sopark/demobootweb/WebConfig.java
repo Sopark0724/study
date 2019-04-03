@@ -11,8 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        // 순서를 지정하지 않으면 등록된 순서대로
-        registry.addInterceptor(new GreetingInterceptor());
-        registry.addInterceptor(new AnotherInterceptor());
+        registry.addInterceptor(new GreetingInterceptor()).order(0);
+        registry.addInterceptor(new AnotherInterceptor()).order(-1);
     }
 }
