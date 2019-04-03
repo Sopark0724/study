@@ -1,7 +1,6 @@
 package com.sopark.demobootweb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.message.ObjectMessage;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,8 +9,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -27,6 +30,9 @@ public class SampleControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private Jaxb2Marshaller jaxb2Marshaller;
 
     @Test
     public void hello() throws Exception {
@@ -65,6 +71,7 @@ public class SampleControllerTest {
     @Test
     public void jsonMessage() throws Exception{
         Person person = new Person();
+        person.setId(2019L);
         person.setName("sopark");
         String jsonString = objectMapper.writeValueAsString(person);
 
@@ -73,13 +80,30 @@ public class SampleControllerTest {
                 .accept(MediaType.APPLICATION_JSON_UTF8)        // 내가 받고 싶은 데이터 타입
                 .content(jsonString))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(2019))
+                .andExpect(jsonPath("$.name").value("sopark"));
+    }
 
-        // Given
 
-        // When
+    @Test
+    public void xmlMessage() throws Exception{
+        Person person = new Person();
+        person.setId(2019L);
+        person.setName("sopark");
 
-        // Then
+        StringWriter stringWriter = new StringWriter();
+        StreamResult result = new StreamResult(stringWriter);
+        jaxb2Marshaller.marshal(person, result);
+        String xmlString = stringWriter.toString();
 
+        this.mockMvc.perform(get("/jsonMessage")
+                .contentType(MediaType.APPLICATION_XML)   // 내가 보내는 데이터에 대한 타입
+                .accept(MediaType.APPLICATION_XML)        // 내가 받고 싶은 데이터 타입
+                .content(xmlString))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(xpath("person/name").string("sopark"))
+                .andExpect(xpath("person/id").string("2019"));
     }
 }
