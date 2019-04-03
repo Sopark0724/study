@@ -1,6 +1,7 @@
 package com.sopark.demobootweb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -105,5 +107,18 @@ public class SampleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(xpath("person/name").string("sopark"))
                 .andExpect(xpath("person/id").string("2019"));
+    }
+
+    @Test
+    public void handlerMethodArgumentResolverTest() throws Exception {
+        this.mockMvc.perform(get("/login")
+                .param("username", "sopark")
+                .param("password", "1234")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value(Matchers.is("sopark")))
+                .andExpect(jsonPath("$.password").value(Matchers.is("1234")));
     }
 }

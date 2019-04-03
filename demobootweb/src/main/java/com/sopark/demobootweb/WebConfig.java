@@ -1,10 +1,12 @@
 package com.sopark.demobootweb;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -14,6 +16,15 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private LoginArgumentResolver loginArgumentResolver;
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(loginArgumentResolver);
+
+    }
 
     @Bean
     public Jaxb2Marshaller jaxb2Marshaller(){
