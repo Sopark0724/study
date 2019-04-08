@@ -1,4 +1,6 @@
-## N + 1 쿼리 문제
+# N + 1 쿼리 문제
+
+[예제코드](https://github.com/Sopark0724/study/tree/master/jpa-demo)
 
 JPA 를 무심코 사용하다 보면 "어 이상하네 쿼리가 왜케 느리지?" 라고 생각될 때가 있을것이다.
 그래서 디버깅을 걸어서 문제되는 부분을 찾곤 한다.
@@ -6,6 +8,8 @@ JPA 를 무심코 사용하다 보면 "어 이상하네 쿼리가 왜케 느리�
 오늘은 그중에서 N + 1 쿼리 문제에 대해서 알아보려고 한다.
 예를 들어 다음과 같은 관계의 Entity 가 있다고 가정해보자.
 Category 하나의 여러개의 Book 을 연결한 구조이다.
+
+## ManyToOne 일경우
 
 ![image](https://user-images.githubusercontent.com/6028071/55605316-e6d2a000-57ae-11e9-964b-e35a9ef17eb7.png)
 
@@ -102,7 +106,7 @@ eager 의 경우 Book 이 조회되는 시점에 관련된 엔티티를 같이 �
 
 이제 어떤 해결책이 있는지 확인해보자.
 
-**1. 관계조건을 eager에서 lazy 로 변경**
+### **1. 관계조건을 eager에서 lazy 로 변경**
 
 ```java
 public class Book {
@@ -122,7 +126,7 @@ Hibernate: select book0_.id as id1_0_, book0_.catetory_id as catetory3_0_, book0
 category 관련 쿼리 문이 없어 졌다. 일단 문제는 해결된것 처럼 보인다. 하지만 때에 따라서는 가져온 Book 의 정보에서 Category 정보를 가져와야 하는 경우도 존재 한다. 
 그럴때 개별로 데이터를 가져오는게 아니고 한번에 데이터를 가져오면 불필요한 쿼리를 줄일 수 있다. myBatis 처럼 DB join 쿼리를 이용해서 한번에 처리할 수 있지만 우린 JPA를 사용하기 때문에 JPA 를 이용하여 어떻게 처리하는지 알아보자. 
 
-**2. JPQL 을 이용한 패치 조인**
+### **2. JPQL 을 이용한 패치 조인**
 
 JPQL은 EntityManager 를 통해 생성할 수 있지만 JpaRepository 에서 ```@Query``` 를 사용해서 작성할 수 도 있다. 패치 조인을 사용하는 방법은 아래 코드를 참고하자. 
 
@@ -149,9 +153,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 JPQL 을 이용한 패치 조인은 기본적으로 inner join 을 이용하여 쿼리한다.
 
-**3. @EntityGraph 사용**
+### **3. @EntityGraph 사용**
 
-> @EntityGraph 는 JPA 2.1 부터 지원되는 기능으로 이하 버전일 경우에는 패치 조인을 사용해야 한다.
+@EntityGraph 는 JPA 2.1 부터 지원되는 기능으로 이하 버전일 경우에는 패치 조인을 사용해야 한다.
 ```@EntityGraph(attributePaths = "category")```를 사용하여 같이 가져올 필드에 대해서 정의를 한다면 해당 필드의 데이터도 한번에 가져온다.
 
 ```java
@@ -178,7 +182,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             on book0_.category_id=category1_.id
 ```
 
-지금까지 OneToMany 의 경우에 대해서 알아봤다. 그럼 ManyToOne 일 경우에도 관련 테이블을
+## ManyToOne 일경우
+지금까지 ManyToOne의 경우에 대해서 알아봤다. 그럼 OneToMany 일 경우에도 관련 테이블을
 한번에 가져오는 경우에 대해서도 알아보자
 
 ```java
