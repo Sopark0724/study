@@ -182,7 +182,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             on book0_.category_id=category1_.id
 ```
 
-## ManyToOne 일경우
+## OneToMany 일경우
 지금까지 ManyToOne의 경우에 대해서 알아봤다. 그럼 OneToMany 일 경우에도 관련 테이블을
 한번에 가져오는 경우에 대해서도 알아보자
 
