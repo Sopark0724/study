@@ -1,15 +1,15 @@
 package com.example.jpademo;
 
-import com.example.jpademo.domain.Book;
-import com.example.jpademo.domain.BookRepository;
-import com.example.jpademo.domain.Category;
-import com.example.jpademo.domain.CategoryRepository;
+import com.example.jpademo.domain.*;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -70,5 +70,28 @@ public class JpaDemoApplicationTests {
         bookRepository.save(book2);
 
         bookRepository.findAllByQueryAndEntityGraphWithCategory();
+    }
+
+    @Test
+    public void find_oneToMany_test(){
+        Category category = new Category("IT");
+        categoryRepository.save(category);
+        Category category2 = new Category("자연");
+        categoryRepository.save(category2);
+
+        Book book1 = new Book("JPA 책", category);
+        bookRepository.save(book1);
+        Book book1_1 = new Book("JPA 책2", category);
+        bookRepository.save(book1_1);
+        Book book2 = new Book("자연관찰", category2);
+        bookRepository.save(book2);
+        Book book2_2 = new Book("자연관찰2", category2);
+        bookRepository.save(book2_2);
+
+        List<Category> allWithEntityGraph = categoryRepository.findAllWithEntityGraph();
+        List<Category> allWithFetchJoin = categoryRepository.findAllWithFetchJoin();
+
+        Assertions.assertThat(allWithEntityGraph.size()).isEqualTo(2);
+        Assertions.assertThat(allWithFetchJoin.size()).isEqualTo(2);
     }
 }

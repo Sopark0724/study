@@ -178,3 +178,139 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             on book0_.category_id=category1_.id
 ```
 
+지금까지 OneToMany 의 경우에 대해서 알아봤다. 그럼 ManyToOne 일 경우에도 관련 테이블을
+한번에 가져오는 경우에 대해서도 알아보자
+
+```java
+public class Category {
+    @Id @GeneratedValue
+    private Long id;
+
+    @NonNull
+    private String name;
+
+    @OneToMany(mappedBy = "category")
+    private List<Book> books = new ArrayList<>();
+
+    public void addBook(Book book){
+        this.books.add(book);
+
+        if(book.getCategory() != this){
+            book.setCategory(this);
+        }
+    }
+}
+```
+category에 book 과의 관계를 추가하였다. Category와 Book에 서로 관계조건이 있는 경우
+양방향이라고 보기 보다는 서로다른 단방향 관계 2개이다.
+
+이럴 경우에는 한쪽이 변경되면 다른 한쪽도 변경될 수 있도록 동기화 코드를 넣어줘야 한다.
+(밑에 코드 참고)
+
+```java
+
+public class Category {
+    
+    ....
+    
+    public void addBook(Book book){
+        this.books.add(book);
+
+        if(book.getCategory() != this){
+            book.setCategory(this);
+        }
+    }
+}
+
+public class Book {
+    
+    ....
+
+    public void setCategory(Category category) {
+        this.category = category;
+
+        if(!this.category.getBooks().contains(this)){
+            this.category.addBook(this);
+        }
+    }
+}
+
+```
+
+자 이제 본론으로 들어가서 Category 에서 book에 대한 정보를 한번에 조회하기 위해서 위에서
+배운 2가지 방법중에 한개를 선택할것이다.
+
+> 1. @EntityGraph 사용. (left outer join)
+> 2. JPGL의 fetch join 사용. (inner join)
+
+일단 코드를 작성해서 반환 갯수에 대해서 확인해보자.
+
+```java
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+
+    @EntityGraph(attributePaths = "books")
+    @Query("select category from Category category")
+    List<Category> findAllWithEntityGraph();
+
+    @Query("select category from Category category join fetch category.books")
+    List<Category> findAllWithFetchJoin();
+}
+```
+
+```java
+
+    @Test
+    public void find_oneToMany_test(){
+        Category category = new Category("IT");
+        categoryRepository.save(category);
+        Category category2 = new Category("자연");
+        categoryRepository.save(category2);
+
+        Book book1 = new Book("JPA 책", category);
+        bookRepository.save(book1);
+        Book book1_1 = new Book("JPA 책2", category);
+        bookRepository.save(book1_1);
+        Book book2 = new Book("자연관찰", category2);
+        bookRepository.save(book2);
+        Book book2_2 = new Book("자연관찰2", category2);
+        bookRepository.save(book2_2);
+
+        List<Category> allWithEntityGraph = categoryRepository.findAllWithEntityGraph();
+        List<Category> allWithFetchJoin = categoryRepository.findAllWithFetchJoin();
+
+        Assertions.assertThat(allWithEntityGraph.size()).isEqualTo(2);
+        Assertions.assertThat(allWithFetchJoin.size()).isEqualTo(2);
+    }
+```
+
+다음과 같이 테스트 코드를 작성했을 경우 테스트는 과연 성공할 것인가?
+
+![image](https://user-images.githubusercontent.com/6028071/55692506-b58ee580-59e3-11e9-887c-77f8dd5c7892.png)
+
+다버깅으로 갯수를 확인해본결과 Category를 2개 저장했지만 fetch join 을 이용했을때는
+4개의 category 를 조회한다. 쿼리문만 봤을때는 둘다 4개의 결과물을 반환해야 할것 같지만
+@EntityGraph는 내부적으로 중복된 데이터를 제거한다. 그럼 fetch join 을 했을 경우에는
+어떤 처리방법이 있을까? 
+
+```java
+    @Query("select distinct category from Category category join fetch category.books")
+    List<Category> findAllWithFetchJoin();
+```
+```distinct``` 예약어를 사용하여 중복된 데이터를 제거 할 수 있다.
+
+> 결론
+
+N+1 퀄리에 대해서는 예전부터 많이 발생했던 문제이다. 초반에 개발때는 속도이슈가 발생하지
+않지만 운영을 할때는 이야기가 달라진다. 운영에서는 많은 데이터를 필요하기 때문에 그에 따른
+속도 이슈는 생길 수 있다. JPA 가 느리다는 말은 이런 부분들에 대해서 잘 학습하지 못해
+발생하기도 한다. 아직 배울부분이 많이 남은것 같다.
+
+
+
+
+
+
+
+
+
+
