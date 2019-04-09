@@ -21,6 +21,9 @@ public class JpaDemoApplicationTests {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @Before
     public void setUp(){
         bookRepository.deleteAll();
@@ -93,5 +96,22 @@ public class JpaDemoApplicationTests {
 
         Assertions.assertThat(allWithEntityGraph.size()).isEqualTo(2);
         Assertions.assertThat(allWithFetchJoin.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void findAll_JPQL_fetch_join_and_entityGraph2(){
+        Category category = new Category("IT");
+        categoryRepository.save(category);
+        Category category2 = new Category("자연");
+        categoryRepository.save(category2);
+
+        Book book1 = new Book("JPA 책", category);
+        bookRepository.save(book1);
+        Book book2 = new Book("자연관찰", category2);
+        bookRepository.save(book2);
+
+        categoryService.relationTest();
+        List<Book> all = bookRepository.findAll();
+        System.out.println(all);
     }
 }

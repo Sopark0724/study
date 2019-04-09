@@ -31,4 +31,8 @@ public class Book {
             this.category.addBook(this);
         }
     }
+
+    public void changeTitle(){
+        this.title = "jsp_test";
+    }
 }

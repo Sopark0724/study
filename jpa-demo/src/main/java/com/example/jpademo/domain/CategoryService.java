@@ -23,4 +23,9 @@ public class CategoryService {
                 .map(category -> category.getBooks().get(0))
                 .forEach(System.out::println);
     }
+
+    @Transactional
+    public void relationTest(){
+        categoryRepository.findAll().stream().forEach(category -> category.updateAll());
+    }
 }

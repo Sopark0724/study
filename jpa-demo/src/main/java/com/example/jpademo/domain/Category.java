@@ -27,4 +27,9 @@ public class Category {
             book.setCategory(this);
         }
     }
+
+    public void updateAll() {
+        this.books.stream()
+                .forEach(Book::changeTitle);
+    }
 }
