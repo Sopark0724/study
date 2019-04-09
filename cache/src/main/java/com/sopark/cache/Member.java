@@ -4,14 +4,11 @@ import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @ToString
+@Cache(region = "GlobalConfig",usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor
 public class Member {

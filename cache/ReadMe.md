@@ -39,6 +39,47 @@ Entity 에 대한 데이터베이스에 대한 통신 비용을 줄입니다. 1�
 Second Level Cache 의 구현체는 여러개가 있지만 예제에서는 ehcache의 적용방법에 대해서
 알아보자. [다른 구현체에 대한 자료](https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/reference/htmlsingle/#boot-features-caching-provider)
 
+0. Entity 생성하기
+
+User와 Member Entity 생성하고 해당 Entity에 캐시를 적용하는 방법을 알아보자.
+
+```java
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
+public class User {
+    @Id @GeneratedValue @NonNull
+    private Long id;
+
+    @NonNull
+    private String name;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    List<Member> members = new ArrayList<>();
+
+    public void addMember(Member member){
+        this.members.add(member);
+    }
+}
+
+@Entity
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
+public class Member {
+
+    @Id @GeneratedValue
+    private Long id;
+
+    @NonNull
+    private String Type;
+}
+
+```
+
 1. pom.xml 에 관련 라이브러리 추가 
 
 Second Level Cache를 적용하기 위해서는 우선 pom.xml 에 관련 라이브러리들을
@@ -137,18 +178,157 @@ defaultCache 태그는 반드시 존재하여야 하며 ```org.hibernate.annotat
 사용하는 패치지 구조에 대해서 잘확인하고 사용해야 한다. spring 에서 사용하는 
 ```org.springframework.cache.annotation.Cacheable``` 도 있기 때문에 구분을 잘해서 사용해야 한다.
 
+- @Cachealbe(javax.persistence.Cacheable) : 캐시 사용할 것인지에 대한 옵션이지만 hibernate cache 를 사용할 경우 해당 옵션은 무시되는 것으로 보인다. 
+관련 설정을 하거나 안하거나 같은 결과값이 나온다.
+
+![image](https://user-images.githubusercontent.com/6028071/55780270-8b701d00-5ae2-11e9-9851-e1fa2f7e7db9.png)
+
 - @Cache(org.hibernate.annotations.Cache) : 엔티티나 엔티티의 관련 컬렉션 정보를 캐시할때 사용한다.
 
 ![image](https://user-images.githubusercontent.com/6028071/55780248-7bf0d400-5ae2-11e9-962e-361ce6ff9c26.png)
 
 | 속성명  |설명 |
 |---|---|
-| usage  | 캐시동시성 전략을 사용할 수 있다. |
+| usage  | CacheConcurrencyStrategy를 이요해서 캐시동시성 전략을 사용할 수 있다. |
 | region | ehcache.xml 에 정의된 name 의 값에 저장한다. 저장하지 않을 경우 ```해당 패키지 + 클래스``` 명으로 저장된다. |
 | include | all : 모든 필드 <br> non-lazy : non-lazy인 필드들만 |
 
-- @Cachealbe(javax.persistence.Cacheable) : 캐시 사용할 것인지에 대한 옵션이지만 hibernate cache 를 사용할 경우 해당 옵션은 무시되는 것으로 보인다. 
-관련 설정을 하거나 안하거나 같은 결과값이 나온다.
+- CacheConcurrencyStrategy
+|속성|설명|
+|---|---|
+|NONE| 캐시를 설정하지 않음|
+|READ_ONLY|읽기 전용으로 설정한다. **등록, 삭제는 가능하지만 수정은 불가능.** 객체를 복사하지 않고 원본 객체를 반환|
+|NONSTRICT_READ_WRITE|엄격하지 않은 읽고 쓰기 전략. 동시에 같은 엔티티를 수정하면 데이터 일관성이 깨질 수 있다. **EHCACHE는 데이터를 수정하면 캐시 데이터를 무효화 한다.**|
+|READ_WRITE|읽기 쓰기가 가능하고 READ COMMITTED 정도의 격리 수준을 보장한다. EHCACHE는 데이터를 수정하면 캐시 데이터도 같이 수정한다.|
+|TRANSACTIONAL|컨테이너 관리 환경에서 사용할 수 있다. 설정에 따란 REPEATABLE READ 정도의 격리 수준을 보장받을 수 있다.|
 
-![image](https://user-images.githubusercontent.com/6028071/55780270-8b701d00-5ae2-11e9-9851-e1fa2f7e7db9.png)
+```java
+@Cache(region = "GlobalConfig",usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class User {
+    ....
+    @Cache(region = "GlobalConfig", usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    List<Member> members = new ArrayList<>();
+    ....
+}
+```
+사용하는 Entity와 List에 ```@Cache``` 를 적용했다. 그럼 실제 캐시가 적용되는지 확인해보자
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class CacheApplicationTests {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Before
+    public void setUp(){
+        userRepository.deleteAll();
+
+        IntStream.range(0, 3).forEach(value -> {
+            User user = new User(Long.valueOf(value), "sopark1");
+
+            IntStream.range(0, 3).forEach(value1 -> {
+                user.addMember(new Member("MEMBER" + value));
+            });
+
+            userRepository.save(user);
+        });
+    }
+
+    @Test
+    public void findAllUsers(){
+        userRepository.findAll();
+        System.out.println("==========================");
+        userRepository.findById(1L);
+        userRepository.findById(1L);
+        userRepository.findById(1L);
+        System.out.println("==========================");
+    }
+}
+```
+실행결과
+
+![image](https://user-images.githubusercontent.com/6028071/55798168-3e537180-5b09-11e9-88d4-7bea4e7ec95d.png)
+
+실제 쿼리는 ```userRepository.findAll()``` 할때 한번만 날아가고 이후에 ``ùserRepository.findBy(1L)```을
+호출했을 때는 쿼리가 안날아가는거 보니 제대로 적용된것 같다.
+
+그럼 다음으로 user객체에 있는 members 에 대해서도 캐시가 잘 적용되었은지 확인해보자.
+user객체의 members 는 OneToMany의 Lazy 로 되어 있기때문에 영속성 처리를 위해 UserService
+클래스를 만들고 그안에서 호출하도록 해보자.
+
+```java
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Transactional
+    public void printAllMembers(){
+        userRepository.findAll().stream()
+                .forEach(user -> System.out.println(user.getMembers()));
+    }
+}
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class CacheApplicationTests {
+    
+    ....
+    
+    @Test
+    public void printAllMembers(){
+        System.out.println("==========================");
+        userService.printAllMembers();
+        System.out.println("==========================");
+        userService.printAllMembers();
+        System.out.println("==========================");
+    }
+}
+```
+
+실행 결과
+
+![image](https://user-images.githubusercontent.com/6028071/55799204-bd49a980-5b0b-11e9-9895-d70e7c640bd9.png)
+
+첫번째 호출할때와는 다르게 2번째 호출할때 더 많은 쿼리가 날아가는 것을 확인할 수 있다.
+
+```java
+    @Cache(region = "GlobalConfig", usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    List<Member> members = new ArrayList<>();
+```
+
+List 에 @Cache를 걸게되면 Member의 id만 캐시하고 있고 실제 Member entity는 캐시를 하고 있지 않는다.
+그렇기 때문에 가지고 있는 Member의 id를 가지고 다시 조회를 하는것이다. Member에도 동일한 ```@Cache``를 적용하고 다시 테스드를 돌려보자.
+
+```java
+@Entity
+@ToString
+@Cache(region = "GlobalConfig",usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
+public class Member {
+
+    @Id @GeneratedValue
+    private Long id;
+
+    @NonNull
+    private String Type;
+}
+```
+
+![image](https://user-images.githubusercontent.com/6028071/55799546-9d66b580-5b0c-11e9-9733-ae450ec62231.png)
+
+2번째 호출할때 Member Entity 가 캐시가 되어 실행되는 쿼리는 1번이다. 
+
+
+
+
+
  

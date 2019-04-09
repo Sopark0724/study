@@ -11,9 +11,9 @@ import java.util.List;
 
 @Entity
 @Getter
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor
+@Cache(region = "GlobalConfig",usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User {
 
     @Id @GeneratedValue @NonNull
@@ -22,8 +22,7 @@ public class User {
     @NonNull
     private String name;
 
-    @NonNull
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @Cache(region = "GlobalConfig", usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     List<Member> members = new ArrayList<>();
