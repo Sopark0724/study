@@ -1,5 +1,5 @@
 # N + 1 쿼리 문제
- 
+
 [예제코드](https://github.com/Sopark0724/study/tree/master/jpa-demo)
 
 JPA 를 무심코 사용하다 보면 "어 이상하네 쿼리가 왜케 느리지?" 라고 생각될 때가 있을것이다.
