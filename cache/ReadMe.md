@@ -36,8 +36,9 @@ Entity 에 대한 데이터베이스에 대한 통신 비용을 줄입니다. 1�
 
 #### 적용하기
 
-Second Level Cache 의 구현체는 여러개가 있지만 예제에서는 ehcache의 적용방법에 대해서
+Second Level Cache 의 구현체는(기본은 ConcurrentMapCacheManager 이다.) 여러개가 있지만 예제에서는 ehcache의 적용방법에 대해서
 알아보자. [다른 구현체에 대한 자료](https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/reference/htmlsingle/#boot-features-caching-provider)
+
 
 0. Entity 생성하기
 
@@ -124,7 +125,7 @@ spring.jpa.properties.hibernate.cache.use_second_level_cache=true
 spring.jpa.properties.hibernate.cache.use_query_cache=true
 ```
 
-4. ehcache.xml 파일 정의
+4. ehcache.xml 파일 정의<a name="xml_config"></a>
 
 ```xml
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -153,25 +154,25 @@ spring.jpa.properties.hibernate.cache.use_query_cache=true
 defaultCache 태그는 반드시 존재하여야 하며 ```org.hibernate.annotations.Cache```
 의 경우 이름을 지정하지 않으면 defaultCache 속성 값으로 ```해당 패키지 + 클래스``` 명으로 지정된다.
 
-| 속성값 |설명| 
-|---|---|
-|name|캐시 이름을 설정한다. 캐시를 식별할때 사용한다.|
-|maxBytesLocalHeap| 최대 로컬 힙메모리 사용량 설정, 1k, 1m, 1g 해당 옵션을 사용할 경우 maxEntriesLocalHeap 설정은 사용 할 수 없음.|
-|maxElementsInMemory| 메모리에 캐싱 되어질 객체의 최대수|
-|maxEntriesLocalHeap| 힙메모리 최대량|
-|maxElementsOnDisk| 디스크 캐시에 저장 될 최대 객체의 수를 지정|
-|maxEntriesLocalDisk| 로컬 디스크에 유지 될 최대 객체 수|
-|eternal|저장된 캐시를 제거할지 여부를 설정한다. true 인 경우 저장된 캐시는 제거되지 않으며 timeToIdleSeconds, timeToLiveSeconds 설정은 무시된다.|
-|overflowToDisk| maxElementsInMemory 음계량에 가까우면 오버플로우되는 객체들을 디스크에 저장 할지 결정|
-|timeToIdleSeconds| 생성후 해당 시간 동안 캐쉬가 사용되지 않으면 삭제된다. 0은 삭제되지 않는다. 단 eternal=false 인 경우에만 유효하다.| 
-|timeToLiveSeconds| 생성후 해당시간이 지나면 캐쉬는 삭제된다. 0은 삭제되지 않는 다. 단 eternal=false 인 경우에만 유효하다. |
-|diskExpiryThreadIntervalSeconds|디스크(DiskStore)에 저장된 캐시들을 정리하기 |위한 작업의 실행 간격 시간을 설정한다. 기본값은 120초|
-|diskSpoolBufferSizeMB| 스풀버퍼에 대한 디스크(DiskStore) 크기 설정한다.OutOfMemory 에러가 발생 시 설정한 크기를 낮추는 것이 좋다. |
-|clearOnFlush|flush() 메서드가 호출되면 메모리(MemoryStore)가 삭제할지 여부를 설정한다. 기본값은 true 이며, 메모리(MemoryStore)는 삭제된다. |
-|memoryStoreEvictionPolicy | maxEntriesLocalHeap 설정 값에 도달했을때 설정된 정책에 따리 객체가 제거되고 새로추가된다.<br>LRU: 사용이 가장 적었던 것부터 제거한다.<br>FIFO: 먼저 입력된 것부터 제거한다.<br>LFU: 사용량이 적은 것부터 제거한다.|
-|logging | 로깅 사용 여부를 설정한다.|
-|maxEntriesInCache | Terracotta의 분산캐시에만 사용가능하며, 클러스터에 저장 할 수 있는 최대 엔트리 수를 설정한다. 0은 제한이 없다. 캐시가 작동하는 동안에 속성을 수정할 수 있다.|
-|overflowToOffHeap | 이 설정은 Ehcache 엔터프라이즈 버전에서 사용할 수 있다. true 로 설정하며 성능을 향상시킬 수 있는 Off-heap 메모리 스토리지를 활용하여 캐시를 사용할 수 있다. Off-heap 메모리 자바의 GC에 영향을 주지않는다. (기본값은 false) <br> |
+| 속성값                          | 설명                                                         |
+| ------------------------------- | ------------------------------------------------------------ |
+| name                            | 캐시 이름을 설정한다. 캐시를 식별할때 사용한다.              |
+| maxBytesLocalHeap               | 최대 로컬 힙메모리 사용량 설정, 1k, 1m, 1g 해당 옵션을 사용할 경우 maxEntriesLocalHeap 설정은 사용 할 수 없음. |
+| maxElementsInMemory             | 메모리에 캐싱 되어질 객체의 최대수                           |
+| maxEntriesLocalHeap             | 힙메모리 최대량                                              |
+| maxElementsOnDisk               | 디스크 캐시에 저장 될 최대 객체의 수를 지정                  |
+| maxEntriesLocalDisk             | 로컬 디스크에 유지 될 최대 객체 수                           |
+| eternal                         | 저장된 캐시를 제거할지 여부를 설정한다. true 인 경우 저장된 캐시는 제거되지 않으며 timeToIdleSeconds, timeToLiveSeconds 설정은 무시된다. |
+| overflowToDisk                  | maxElementsInMemory 음계량에 가까우면 오버플로우되는 객체들을 디스크에 저장 할지 결정 |
+| timeToIdleSeconds               | 생성후 해당 시간 동안 캐쉬가 사용되지 않으면 삭제된다. 0은 삭제되지 않는다. 단 eternal=false 인 경우에만 유효하다. |
+| timeToLiveSeconds               | 생성후 해당시간이 지나면 캐쉬는 삭제된다. 0은 삭제되지 않는 다. 단 eternal=false 인 경우에만 유효하다. |
+| diskExpiryThreadIntervalSeconds | 디스크(DiskStore)에 저장된 캐시들을 정리하기                 |
+| diskSpoolBufferSizeMB           | 스풀버퍼에 대한 디스크(DiskStore) 크기 설정한다.OutOfMemory 에러가 발생 시 설정한 크기를 낮추는 것이 좋다. |
+| clearOnFlush                    | flush() 메서드가 호출되면 메모리(MemoryStore)가 삭제할지 여부를 설정한다. 기본값은 true 이며, 메모리(MemoryStore)는 삭제된다. |
+| memoryStoreEvictionPolicy       | maxEntriesLocalHeap 설정 값에 도달했을때 설정된 정책에 따리 객체가 제거되고 새로추가된다.<br>LRU: 사용이 가장 적었던 것부터 제거한다.<br>FIFO: 먼저 입력된 것부터 제거한다.<br>LFU: 사용량이 적은 것부터 제거한다. |
+| logging                         | 로깅 사용 여부를 설정한다.                                   |
+| maxEntriesInCache               | Terracotta의 분산캐시에만 사용가능하며, 클러스터에 저장 할 수 있는 최대 엔트리 수를 설정한다. 0은 제한이 없다. 캐시가 작동하는 동안에 속성을 수정할 수 있다. |
+| overflowToOffHeap               | 이 설정은 Ehcache 엔터프라이즈 버전에서 사용할 수 있다. true 로 설정하며 성능을 향상시킬 수 있는 Off-heap 메모리 스토리지를 활용하여 캐시를 사용할 수 있다. Off-heap 메모리 자바의 GC에 영향을 주지않는다. (기본값은 false) <br> |
 
 5. @Cache, @Cacheble 적용
 
@@ -179,7 +180,7 @@ defaultCache 태그는 반드시 존재하여야 하며 ```org.hibernate.annotat
 ```org.springframework.cache.annotation.Cacheable``` 도 있기 때문에 구분을 잘해서 사용해야 한다.
 
 - @Cachealbe(javax.persistence.Cacheable) : 캐시 사용할 것인지에 대한 옵션이지만 hibernate cache 를 사용할 경우 해당 옵션은 무시되는 것으로 보인다. 
-관련 설정을 하거나 안하거나 같은 결과값이 나온다.
+  관련 설정을 하거나 안하거나 같은 결과값이 나온다.
 
 ![image](https://user-images.githubusercontent.com/6028071/55780270-8b701d00-5ae2-11e9-9851-e1fa2f7e7db9.png)
 
@@ -187,20 +188,20 @@ defaultCache 태그는 반드시 존재하여야 하며 ```org.hibernate.annotat
 
 ![image](https://user-images.githubusercontent.com/6028071/55780248-7bf0d400-5ae2-11e9-962e-361ce6ff9c26.png)
 
-| 속성명  |설명 |
-|---|---|
-| usage  | CacheConcurrencyStrategy를 이요해서 캐시동시성 전략을 사용할 수 있다. |
-| region | ehcache.xml 에 정의된 name 의 값에 저장한다. 저장하지 않을 경우 ```해당 패키지 + 클래스``` 명으로 저장된다. |
-| include | all : 모든 필드 <br> non-lazy : non-lazy인 필드들만 |
+| 속성명  | 설명                                                         |
+| ------- | ------------------------------------------------------------ |
+| usage   | CacheConcurrencyStrategy를 이요해서 캐시동시성 전략을 사용할 수 있다. |
+| region  | ehcache.xml 에 정의된 name 의 값에 저장한다. 저장하지 않을 경우 ```해당 패키지 + 클래스``` 명으로 저장된다. |
+| include | all : 모든 필드 <br> non-lazy : non-lazy인 필드들만          |
 
 - CacheConcurrencyStrategy
-|속성|설명|
-|---|---|
-|NONE| 캐시를 설정하지 않음|
-|READ_ONLY|읽기 전용으로 설정한다. **등록, 삭제는 가능하지만 수정은 불가능.** 객체를 복사하지 않고 원본 객체를 반환|
-|NONSTRICT_READ_WRITE|엄격하지 않은 읽고 쓰기 전략. 동시에 같은 엔티티를 수정하면 데이터 일관성이 깨질 수 있다. **EHCACHE는 데이터를 수정하면 캐시 데이터를 무효화 한다.**|
-|READ_WRITE|읽기 쓰기가 가능하고 READ COMMITTED 정도의 격리 수준을 보장한다. EHCACHE는 데이터를 수정하면 캐시 데이터도 같이 수정한다.|
-|TRANSACTIONAL|컨테이너 관리 환경에서 사용할 수 있다. 설정에 따란 REPEATABLE READ 정도의 격리 수준을 보장받을 수 있다.|
+| 속성                 | 설명                                                         |
+| -------------------- | ------------------------------------------------------------ |
+| NONE                 | 캐시를 설정하지 않음                                         |
+| READ_ONLY            | 읽기 전용으로 설정한다. **등록, 삭제는 가능하지만 수정은 불가능.** 객체를 복사하지 않고 원본 객체를 반환 |
+| NONSTRICT_READ_WRITE | 엄격하지 않은 읽고 쓰기 전략. 동시에 같은 엔티티를 수정하면 데이터 일관성이 깨질 수 있다. **EHCACHE는 데이터를 수정하면 캐시 데이터를 무효화 한다.** |
+| READ_WRITE           | 읽기 쓰기가 가능하고 READ COMMITTED 정도의 격리 수준을 보장한다. EHCACHE는 데이터를 수정하면 캐시 데이터도 같이 수정한다. |
+| TRANSACTIONAL        | 컨테이너 관리 환경에서 사용할 수 있다. 설정에 따란 REPEATABLE READ 정도의 격리 수준을 보장받을 수 있다. |
 
 ```java
 @Cache(region = "GlobalConfig",usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -326,9 +327,3 @@ public class Member {
 ![image](https://user-images.githubusercontent.com/6028071/55799546-9d66b580-5b0c-11e9-9733-ae450ec62231.png)
 
 2번째 호출할때 Member Entity 가 캐시가 되어 실행되는 쿼리는 1번이다. 
-
-
-
-
-
- 

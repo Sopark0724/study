@@ -1,4 +1,4 @@
-package com.sopark.cache;
+package com.sopark.cache.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

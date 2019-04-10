@@ -1,9 +1,8 @@
-package com.sopark.cache;
+package com.sopark.cache.domain;
 
 import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.cache.annotation.CacheConfig;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,7 +15,9 @@ import java.util.List;
 @Cache(region = "GlobalConfig",usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User {
 
-    @Id @GeneratedValue @NonNull
+    @Id
+    @GeneratedValue
+    @NonNull
     private Long id;
 
     @NonNull
