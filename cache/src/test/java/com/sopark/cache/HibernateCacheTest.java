@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 @RunWith(SpringRunner.class)
@@ -56,4 +59,22 @@ public class HibernateCacheTest {
         userService.printAllMembers();
         System.out.println("==========================");
     }
+
+    @Test
+    public void aaa(){
+        // Given
+        if(aaaa() || aaaa() || aaaa() || aaaa()) {
+            System.out.println("finish");
+        }
+        // When
+
+        // Then
+
+    }
+
+    private boolean aaaa() {
+        System.out.println("aaaaa");
+        return true;
+    }
+
 }
