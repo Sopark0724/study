@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  * 시간 복잡도 : O(N^2)
  *
  */
-public class BubbleSort implements Sort{
+public class BubbleSort implements Sortable {
 
     @Override
     public int[] sort(int[] input) {

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  *
  * 시간복잡도 : O(N^2)
  */
-public class InsertSort implements Sort{
+public class InsertSort implements Sortable {
 
     @Override
     public int[] sort(int[] input){

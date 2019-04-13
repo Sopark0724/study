@@ -1,5 +1,5 @@
 package com.sopark.algorism.study.sort;
 
-public interface Sort {
+public interface Sortable {
     int[] sort(int[] input);
 }

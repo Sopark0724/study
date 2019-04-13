@@ -5,7 +5,7 @@ package com.sopark.algorism.study.sort;
  * 시간복잡도 : O(N^2)
  */
 
-public class SelectSort implements Sort{
+public class SelectSort implements Sortable {
 
     @Override
     public int[] sort(int[] input) {

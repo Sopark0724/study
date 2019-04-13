@@ -15,7 +15,7 @@ package com.sopark.algorism.study.sort;
  * 분할 : 1~3번
  * 정복 : 4번
  */
-public class QuickSort implements Sort{
+public class QuickSort implements Sortable {
 
     @Override
     public int[] sort(int[] input) {

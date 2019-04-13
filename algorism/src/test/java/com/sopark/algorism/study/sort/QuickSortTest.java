@@ -13,7 +13,7 @@ public class QuickSortTest {
         int[] input = {3,2,1,5,6};
 
         // When
-        Sort quickSort = new QuickSort();
+        Sortable quickSort = new QuickSort();
         int[] result = quickSort.sort(input);
 
         // Then
@@ -27,7 +27,7 @@ public class QuickSortTest {
         int[] input = {7,9,8};
 
         // When
-        Sort quickSort = new QuickSort();
+        Sortable quickSort = new QuickSort();
         int[] result = quickSort.sort(input);
 
         // Then
