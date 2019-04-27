@@ -1,49 +1,59 @@
 package com.sopark.algorism.study.collection;
 
 public class LinkedList {
+    private Node header;
+
+    public LinkedList() {
+        this.header = new Node();
+    }
+
     static class Node {
         Node next;
         int data;
 
+        Node() {
+        }
+
         public Node(int data) {
             this.data = data;
         }
+    }
 
-        public void append(int data){
-            Node node = new Node(data);
-            Node n = this;
 
-            while (n.next != null) {
-                n = n.next;
-            }
+    public void append(int data){
+        Node node = new Node(data);
+        Node n = header;
 
-            n.next = node;
+        while (n.next != null) {
+            n = n.next;
         }
 
-        public void delete(int data) {
-            Node node = this;
-            while (node.next != null) {
-                if(node.next.data == data) {
-                    node.next = node.next.next;
-                }else {
-                    node = node.next;
-                }
-            }
-        }
+        n.next = node;
+    }
 
-        public void print(){
-            Node node = this;
-
-            while(node.next != null){
-                System.out.print(node.data + " -> ");
+    public void delete(int data) {
+        Node node = header;
+        while (node.next != null) {
+            if(node.next.data == data) {
+                node.next = node.next.next;
+            }else {
                 node = node.next;
             }
-            System.out.println(node.data);
         }
     }
 
+    public void print(){
+        Node node = header.next;
+
+        while(node.next != null){
+            System.out.print(node.data + " -> ");
+            node = node.next;
+        }
+        System.out.println(node.data);
+    }
+
     public static void main(String[] args) {
-        Node node = new Node(1);
+        LinkedList node = new LinkedList();
         node.append(2);
         node.append(3);
         node.append(4);
