@@ -1,15 +1,15 @@
 package com.sopark.algorism.study.collection;
 
 public class LinkedList {
-    private Node header;
+    public Node header;
 
     public LinkedList() {
         this.header = new Node();
     }
 
-    static class Node {
-        Node next;
-        int data;
+    public static class Node {
+        public Node next;
+        public int data;
 
         Node() {
         }
@@ -52,6 +52,22 @@ public class LinkedList {
         System.out.println(node.data);
     }
 
+    public void removeDupls(){
+        Node node = header.next;
+
+        while(node != null && node.next != null) {
+            Node r = node;
+            while (r.next != null) {
+                if(node.data == r.next.data){
+                    r.next = r.next.next;
+                }else {
+                    r = r.next;
+                }
+            }
+            node = node.next;
+        }
+    }
+
     public static void main(String[] args) {
         LinkedList node = new LinkedList();
         node.append(2);
@@ -60,5 +76,11 @@ public class LinkedList {
         node.print();
         node.delete(3);
         node.print();
+        node.append(2);
+        node.append(4);
+        node.print();
+        node.removeDupls();
+        node.print();
+
     }
 }
