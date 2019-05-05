@@ -3,6 +3,8 @@ package com.sopark.algorism.study.collection;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
+import java.util.LinkedList;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.*;
 
