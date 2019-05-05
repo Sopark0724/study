@@ -60,6 +60,10 @@ public class DFS {
         return recursive(nodes.get(0), new ArrayList<>());
     }
 
+    public List<Integer> searchRecusive(int startIndex) {
+        return recursive(nodes.get(startIndex), new ArrayList<>());
+    }
+
     private List<Integer> recursive(Node node, List<Integer> result) {
         if(node == null || node.mark) {
             return result;
@@ -69,10 +73,6 @@ public class DFS {
         node.mark = true;
 
         node.child.forEach(node1 -> this.recursive(node1, result));
-
-//        for(Node child : node.child){
-//            this.recursive(child, result);
-//        }
 
         return result;
     }
