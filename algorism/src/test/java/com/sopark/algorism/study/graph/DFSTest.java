@@ -76,4 +76,30 @@ public class DFSTest {
         List<Integer> expectedValue = Arrays.asList(3,1,0,2,4,5,6,8,7);
         Assertions.assertThat(result.toString()).isEqualTo(expectedValue.toString());
     }
+
+    @Test
+    public void test11(){
+        // Given
+
+        // When
+
+        // Then
+        System.out.println(whilereturn());
+    }
+
+    public int whilereturn(){
+        int i = 10;
+        while (i > 0) {
+
+            if(i == 5) {
+                return i;
+            }
+
+            i--;
+        }
+
+        System.out.println("testttt" + i);
+
+        return i;
+    }
 }
