@@ -21,16 +21,16 @@ public class TreeSearch {
     public void makeTree(int[] data) {
         nodes = new Node[data.length];
         Arrays.stream(data).forEach(value -> nodes[value] = new Node(value));
-        rootNode = this.makeTreeRecusive(nodes,0,nodes.length -1);
+        rootNode = this.makeTreeRecusive(0,nodes.length -1);
     }
 
-    private Node makeTreeRecusive(Node[] nodes, int start, int end){
+    private Node makeTreeRecusive(int start, int end){
         if(start > end) return null;
 
         int middle = (start + end) / 2;
         Node node = nodes[middle];
-        node.left = this.makeTreeRecusive(nodes, start, middle-1);
-        node.right = this.makeTreeRecusive(nodes, middle + 1, end);
+        node.left = this.makeTreeRecusive(start, middle-1);
+        node.right = this.makeTreeRecusive(middle + 1, end);
 
         return node;
     }
