@@ -2,6 +2,10 @@ package com.sopark.algorism.study.tree;
 
 import java.util.stream.IntStream;
 
+/**
+ * 자신의 오른쪽 노드가 없다는건 찾고자 하는 값이 위에 존재. 위쪽으로 찾다가 처음 오른쪽으로 꺽이는 부분이 다음값.
+ * 자신의 오른쪽 노드가 있다는건 처음 오른쪽 값에서 왼쪽으로 찾다 마지막 값이 다음값.
+ */
 public class TreeNextValue {
     class Node {
         int data;
