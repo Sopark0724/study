@@ -2,10 +2,9 @@ package com.sopark.web;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -23,8 +22,12 @@ public class HelloAspect {
         log.info("aop @After!!");
     }
 
-    @Pointcut("execution(* com.sopark.web.*.hello())")
-    public void onPointcut(JoinPoint joinPoint) {
-        log.info("aop @Pointcut!!");
+    @Around("execution(* com.sopark.web.*.hello())")
+    public Object onPointcut(ProceedingJoinPoint pjp) throws Throwable {
+        log.info("aop start @Around!!");
+        Object proceed = pjp.proceed();
+        log.info("aop end @Around!!");
+
+        return proceed;
     }
 }
