@@ -16,8 +16,9 @@ public class HelloFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        log.info("filter doFilter!!");
+        log.info("filter start - doFilter!!");
         filterChain.doFilter(servletRequest, servletResponse);
+        log.info("filter end - doFilter!!");
     }
 
     @Override
