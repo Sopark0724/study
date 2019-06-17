@@ -326,4 +326,6 @@ public class Member {
 
 ![image](https://user-images.githubusercontent.com/6028071/55799546-9d66b580-5b0c-11e9-9733-ae450ec62231.png)
 
-2번째 호출할때 Member Entity 가 캐시가 되어 실행되는 쿼리는 1번이다. 
+2번째 호출할때 Member Entity 가 캐시가 되어 실행되는 쿼리는 1번이다.
+
+findByxxxx 를 하더라도 2차 캐시 대상이됨. 
